@@ -1,4 +1,4 @@
-package com.example.hasnaa.mobilestudiotask.UI;
+package com.example.hasnaa.mobilestudiotask;
 
 import android.widget.ImageView;
 

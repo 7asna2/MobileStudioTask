@@ -12,11 +12,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.example.hasnaa.mobilestudiotask.UI.ActivityListener;
+import com.example.hasnaa.mobilestudiotask.GetMovieImage;
 import com.example.hasnaa.mobilestudiotask.Modules.Movie;
 import com.example.hasnaa.mobilestudiotask.R;
-import com.example.hasnaa.mobilestudiotask.UI.MovieDetailActivity;
-import com.example.hasnaa.mobilestudiotask.UI.MovieListActivity;
 
 /**
  * A fragment representing a single Movie detail screen.

@@ -1,4 +1,4 @@
-package com.example.hasnaa.mobilestudiotask;
+package com.example.hasnaa.mobilestudiotask.NewPackage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +20,7 @@ public class DataTask {
     public <T> T getDataParsed ( Class<T> classType ,int type) throws IOException {
         String response = getResponseFromHttpUrl(url);
         if(type==JSON_DATA_FORM)
-            return new Parser().parseJson(response ,classType );
+            return new Parser().parseJson(response ,classType);
         else
             return null; //nt implemented yet
     }

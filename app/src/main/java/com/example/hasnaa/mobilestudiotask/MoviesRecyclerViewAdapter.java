@@ -8,7 +8,6 @@ import android.widget.ImageView;
 
 import com.example.hasnaa.mobilestudiotask.Modules.Movie;
 import com.example.hasnaa.mobilestudiotask.UI.ActivityListener;
-import com.example.hasnaa.mobilestudiotask.UI.GetMovieImage;
 
 import java.util.List;
 

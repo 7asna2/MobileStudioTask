@@ -1,4 +1,4 @@
-package com.example.hasnaa.mobilestudiotask;
+package com.example.hasnaa.mobilestudiotask.NewPackage;
 
 /**
  * Created by Hasnaa on 27-10-2017.
@@ -9,13 +9,11 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
-import java.net.URL;
 
 
-import com.example.hasnaa.mobilestudiotask.Modules.Movie;
 import com.example.hasnaa.mobilestudiotask.Modules.Result;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.example.hasnaa.mobilestudiotask.Utils;
+import com.google.gson.internal.Primitives;
 
 import java.util.List;
 
@@ -24,26 +22,30 @@ import java.util.List;
  */
 
 
-public class FetchDataMovie extends AsyncTaskLoader<List<Movie>> {
+public class FetchDataMovie<D> extends AsyncTaskLoader<List<D>> {
 
+    // U result , D movie
 
     final String LOG_TAG = FetchDataMovie.class.getSimpleName();
+    private New result;
 
-
-    public FetchDataMovie(Context context) {
+    public FetchDataMovie(New<D> result ,Context context) {
         super(context);
+        this.result=result;
 
+//        CLASS_TYPE = class_type;
     }
 
     @Override
-    public List<Movie> loadInBackground() {
+    public List<D> loadInBackground() {
         // TODO  get data from DB first and display it then refresh
         // if no data from server display latest response from DB
         try {
 
             DataTask dataTask = new DataTask(Utils.getPopularMoviesUrl());
-            Result result = dataTask.getDataParsed(Result.class ,DataTask.JSON_DATA_FORM);
-            return result.getResults();
+            result = dataTask.getDataParsed(result.getClass(),DataTask.JSON_DATA_FORM);
+            return result.getResult();
+
 
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());
@@ -54,7 +56,6 @@ public class FetchDataMovie extends AsyncTaskLoader<List<Movie>> {
     }
     @Override
     protected void onStartLoading() {
-//        if (takeContentChanged())
             forceLoad();
     }
 

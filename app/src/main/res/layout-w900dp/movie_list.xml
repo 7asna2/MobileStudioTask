@@ -34,6 +34,13 @@
             app:layoutManager="LinearLayoutManager"
             tools:context=".UI.MovieListActivity"
             tools:listitem="@layout/movie_list_content" />
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="no data available" />
     </android.support.v4.widget.SwipeRefreshLayout>
     <FrameLayout
         android:id="@+id/movie_detail_container"

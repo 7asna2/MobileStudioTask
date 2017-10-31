@@ -5,19 +5,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 
-import com.example.hasnaa.mobilestudiotask.UI.ActivityListener;
-import com.example.hasnaa.mobilestudiotask.FetchDataMovie;
+import com.example.hasnaa.mobilestudiotask.Modules.Result;
+import com.example.hasnaa.mobilestudiotask.NewPackage.DataLoader;
+import com.example.hasnaa.mobilestudiotask.NewPackage.FetchDataMovie;
 import com.example.hasnaa.mobilestudiotask.Modules.Movie;
 import com.example.hasnaa.mobilestudiotask.MoviesRecyclerViewAdapter;
+import com.example.hasnaa.mobilestudiotask.NewPackage.New;
 import com.example.hasnaa.mobilestudiotask.R;
+import com.example.hasnaa.mobilestudiotask.Utils;
 
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -28,16 +35,21 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MovieListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>,ActivityListener {
+public class MovieListActivity extends AppCompatActivity implements ActivityListener{//, DataLoader<Movie>.LoaderCallbacks {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
-    private final static int MOVIES_LOADER = 101;
-    RecyclerView recyclerView;
-    Toolbar toolbar;
+
+    private RecyclerView recyclerView;
+    private TextView emptyView;
+    private Toolbar toolbar;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    DataLoader<Movie> dataLoader;
+
 
 
     @Override
@@ -48,9 +60,17 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
+        emptyView=(TextView)findViewById(R.id.empty_view);
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                dataLoader.RefreshLoader();
+
+            }
+        });
         recyclerView = (RecyclerView) findViewById(R.id.movie_list);
 
-//        assert recyclerView != null;
         setupRecyclerView(recyclerView);
 
         if (findViewById(R.id.movie_detail_container) != null) {
@@ -61,42 +81,41 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
             mTwoPane = true;
         }
 
-        Refresh();
+        setupLoader();
+
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-//        recyclerView.setAdapter(new MoviesRecyclerViewAdapter( data));
-    }
-
-    @Override
-    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-        Log.d("movie :", "loder starting");
-        return new FetchDataMovie(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
-//        for(Movie m :data)
-//            Log.v("movie :",m.getTitle());
-        if (recyclerView != null)
-            recyclerView.setAdapter(new MoviesRecyclerViewAdapter(this, data));
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
-
     }
 
 
-    public void Refresh() {
-        LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<List<Movie>> loader = loaderManager.getLoader(MOVIES_LOADER);
-        if (loader == null) {
-            loaderManager.initLoader(MOVIES_LOADER, null, this);
-        } else {
-            loaderManager.restartLoader(MOVIES_LOADER, null, this);
-        }
+
+    public void setupLoader(){
+        dataLoader = new DataLoader<Movie>(new Result(),Utils.getPopularMoviesUrl(),this,this) {
+
+            @Override
+            public void OnCreateLoader(URL url) {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+
+            @Override
+            public void OnLoadFinished(List<Movie> data) {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
+                if (recyclerView != null)
+                    recyclerView.setAdapter(new MoviesRecyclerViewAdapter(MovieListActivity.this, data));
+                recyclerView.getAdapter().notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void OnNoDataAvailable() {
+                recyclerView.setVisibility(View.GONE);
+
+                emptyView.setVisibility(View.VISIBLE);
+            }
+        };
     }
 
     @Override
@@ -110,7 +129,6 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         if (getDeviceType() == TABLET_DEVICE) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(MovieDetailFragment.ARG_ITEM_ID,movie);
-//                  arguments.putString(MovieDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
             MovieDetailFragment fragment = new MovieDetailFragment();
             fragment.setActivityListener(this);
             fragment.setArguments(arguments);
@@ -118,13 +136,13 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
                     .replace(R.id.movie_detail_container, fragment)
                     .commit();
         } else {
-//            Context context = v.getContext();
             Intent intent = new Intent(this, MovieDetailActivity.class);
             intent.putExtra(Intent.EXTRA_TEXT,movie);
-//                  intent.putExtra(MovieDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
             startActivity(intent);
         }
     }
+
+
 }
 
 

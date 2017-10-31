@@ -1,4 +1,4 @@
-package com.example.hasnaa.mobilestudiotask;
+package com.example.hasnaa.mobilestudiotask.NewPackage;
 
 import com.example.hasnaa.mobilestudiotask.Modules.Result;
 import com.google.gson.Gson;

@@ -1,6 +1,8 @@
 package com.example.hasnaa.mobilestudiotask.Modules;
 
 import java.util.List;
+
+import com.example.hasnaa.mobilestudiotask.NewPackage.New;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 /**
@@ -8,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 
-public class Result {
+public class Result implements New<Movie> {
 
     @SerializedName("page")
     @Expose
@@ -22,6 +24,7 @@ public class Result {
     @SerializedName("results")
     @Expose
     private List<Movie> results = null;
+
 
     public Integer getPage() {
         return page;
@@ -47,12 +50,13 @@ public class Result {
         this.totalPages = totalPages;
     }
 
-    public List<Movie> getResults() {
-        return results;
+    @Override
+    public void setResult(List<Movie> result) {
+        this.results=result;
     }
 
-    public void setResults(List<Movie> results) {
-        this.results = results;
+    @Override
+    public List<Movie> getResult() {
+        return this.results;
     }
-
 }
